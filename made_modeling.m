@@ -9,7 +9,7 @@ gurobi_setup
 cd('/home/patricia/bin/cobratoolbox/');
 initCobraToolbox
 
-out_dir = '/data/pidomics/';
+out_dir = '/data/';
 cd(out_dir);    
 
 addpath(genpath('scripts/')); % genpath for recursive recognition in directory
@@ -22,8 +22,8 @@ cmpi.init() %% initialize the MILP solver
 %load(recon3d_path);
 
 
-atlas_path = '/data/pidomics/data/annotations/atlas/humanGEM.mat';
-atlas_out_dir = '/data/pidomics/data/annotations/atlas/';
+atlas_path = '/data/annotations/atlas/humanGEM.mat';
+atlas_out_dir = '/data/annotations/atlas/';
 
 load(atlas_path);
 
@@ -75,23 +75,23 @@ m = make_elf_model(ihuman);
 % FC of MRN values, p-value (FDR) from DESeq2
 
 patients = {'P043','P018','P015','P053','P055','P063'};
-gene_names = importdata('/data/pidomics/data/made_A_C3/genenames_onlyatlas.txt');
+gene_names = importdata('/data/made/genenames_onlyatlas.txt');
 
 timepoints={'early','middle','late'};
 
 for i= 1:length(patients)
        
-    fold_change = table2array(readtable(strcat('/data/pidomics/data/made_A_C3/patient_',patients{i},'_tps_foldchanges_onlyatlas.csv')));
-    p = table2array(readtable(strcat('/data/pidomics/data/made_A_C3/patient_',patients{i},'_tps_pvalues_onlyatlas.csv')));
+    fold_change = table2array(readtable(strcat('/data/made/patient_',patients{i},'_tps_foldchanges_onlyatlas.csv')));
+    p = table2array(readtable(strcat('/data/made/patient_',patients{i},'_tps_pvalues_onlyatlas.csv')));
     
     % run MADE
     [gene_states,genes,sol,models] = made(m,fold_change,p,1/3, ...
                                         'gene_names',gene_names)
 
-     save(strcat('/data/pidomics/data/made_A_C3/',patients{i},'results_atlas_made.mat'),'gene_states','genes','sol','models');
+     save(strcat('/data/made/',patients{i},'results_atlas_made.mat'),'gene_states','genes','sol','models');
      
      % write into separate files as input for imat
-     mrn = table2array(readtable(strcat('/data/pidomics/data/made_A_C3/patient_',patients{i},'_tps_mrn_onlyatlas.csv')));
+     mrn = table2array(readtable(strcat('/data/made/patient_',patients{i},'_tps_mrn_onlyatlas.csv')));
      
      
      %for j= 1:size(mrn,2)
@@ -103,14 +103,14 @@ for i= 1:length(patients)
         imat_input = table(gene_names, mrn(:,j), minus, gene_states(:,j));
         imat_input.Properties.VariableNames = {'Gene_id';'Values';'minus';'plus'}; 
      
-        %writetable(imat_input, strcat('/data/pidomics/data/made_A_C3/preprocessing/patient_', patients{i}, '_tp', num2str(j), '_preprocessed_made.txt'), 'Delimiter','\t');
-        writetable(imat_input, strcat('/data/pidomics/data/made_A_C3/preprocessing/patient_', patients{i}, '_' , timepoints{j}, '_preprocessed_made.txt'), 'Delimiter','\t');
+        %writetable(imat_input, strcat('/data/made/preprocessing/patient_', patients{i}, '_tp', num2str(j), '_preprocessed_made.txt'), 'Delimiter','\t');
+        writetable(imat_input, strcat('/data/made/preprocessing/patient_', patients{i}, '_' , timepoints{j}, '_preprocessed_made.txt'), 'Delimiter','\t');
 
         
         imat_input = table(gene_names, gene_states(:,j));
         imat_input.Properties.VariableNames = {'Gene_id';'Values'};
-        %writetable(imat_input, strcat('/data/pidomics/data/made_A_C3/preprocessing/patient_', patients{i}, '_tp', num2str(j), '_preprocessed_made_onlyValues.txt'), 'Delimiter','\t');
-        writetable(imat_input, strcat('/data/pidomics/data/made_A_C3/preprocessing/patient_', patients{i}, '_' , timepoints{j}, '_preprocessed_made_onlyValues.txt'), 'Delimiter','\t');
+        %writetable(imat_input, strcat('/data/made/preprocessing/patient_', patients{i}, '_tp', num2str(j), '_preprocessed_made_onlyValues.txt'), 'Delimiter','\t');
+        writetable(imat_input, strcat('/data/made/preprocessing/patient_', patients{i}, '_' , timepoints{j}, '_preprocessed_made_onlyValues.txt'), 'Delimiter','\t');
 
      end
      
@@ -127,8 +127,8 @@ changeCobraSolver('gurobi','ALL');
 model = ihuman;  % does not work with original ihuman annotation but with its elf-model m
 recon_genes = model.genes;
 
-data_dir = '/data/pidomics/data/made_A_C3/preprocessing/';
-out_dir = 'results/models_iMAT_A_C3_made/';
+data_dir = '/data/made/preprocessing/';
+out_dir = 'results/models_iMAT_made/';
 % Make sure the output directory exists
 if (exist(out_dir, 'dir') == 0)
     system(char(strcat('mkdir -p',{' '},out_dir)));  %% {' '} for empty space
@@ -207,8 +207,8 @@ if (iscell(subsys_class{1}))
 end
 
 % Select directories for algorithm
-data_imat_dir = 'results/models_iMAT_A_C3_made/';
-out_dir_imat = 'results/reactionData_iMAT_A_C3_made/';
+data_imat_dir = 'results/models_iMAT_made/';
+out_dir_imat = 'results/reactionData_iMAT_made/';
 
 % Make sure the output directory exists
 if (exist(out_dir_imat, 'dir') == 0)
