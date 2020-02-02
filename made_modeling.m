@@ -1,7 +1,6 @@
-%% run A_C3 data with MADE
+%% run analysis with MADE in combination with iMAT
 
 %% author: Patricia Sieber
-%% date: 28.08.2019
 
 %% import cobra
 cd('/opt/gurobi752/linux64/matlab/');
@@ -74,7 +73,7 @@ m = make_elf_model(ihuman);
 % use genes from DEG analysis
 % FC of MRN values, p-value (FDR) from DESeq2
 
-patients = {'P043','P018','P015','P053','P055','P063'};
+patients = {'P01','P02','P03','P04','P05','P06'};
 gene_names = importdata('/data/made/genenames_onlyatlas.txt');
 
 timepoints={'early','middle','late'};
